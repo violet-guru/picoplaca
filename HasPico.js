@@ -12,8 +12,8 @@ const HasProhibition = (plateText, dateValue) => {
   const secondPeriodStart = dayStart.clone().add(16, 'hours')
   const secondPeriodEnd = dayStart.clone().add(19, 'hours').add(30, 'minutes')
 
-  const prohibitedTime = firstPeriodStart < dateValue && dateValue < firstPeriodEnd ||
-    secondPeriodStart < dateValue && dateValue < secondPeriodEnd
+  const prohibitedTime = (firstPeriodStart < dateValue && dateValue < firstPeriodEnd) ||
+    (secondPeriodStart < dateValue && dateValue < secondPeriodEnd)
 
   switch (lastCharacter) {
     case 1:
@@ -34,57 +34,61 @@ const HasProhibition = (plateText, dateValue) => {
   }
 }
 
-const initReadPlate = (actualMessage) => {
+const InitReadPlate = (actualMessage) => {
   rl.question((actualMessage || '') + 'Insert the plate number in the format AAA-9999 or AAA-999 >', readPlate)
 }
 
-const isValidPlate = (plateValue) => {
+const IsValidPlate = (plateValue) => {
   return /^[A-Za-z]{3}[-][0-9]{3,4}$/.test(plateValue)
 }
 
 const readPlate = (plateValue) => {
-  if (!isValidPlate(plateValue)) {
-    initReadPlate('Try again. ')
+  if (!IsValidPlate(plateValue)) {
+    InitReadPlate('Try again. ')
     return
   }
 
   const carData = { plateText: plateValue }
-  initDateRead('', carData)
+  InitDateRead('', carData)
 }
 
-const initDateRead = (actualMessage, carData) => {
-  rl.question((actualMessage || '') + 'Insert the date in the slash format YYYY/MM/DD >', (answer) => { readDate(answer, carData) })
+const InitDateRead = (actualMessage, carData) => {
+  rl.question((actualMessage || '') + 'Insert the date in the slash format YYYY/MM/DD >', (answer) => { ReadDate(answer, carData) })
 }
 
-const readDate = (dateValue, carData) => {
+const ReadDate = (dateValue, carData) => {
   const myDate = moment(dateValue, 'YYYY/MM/DD', true)
 
   if (!myDate.isValid()) {
-    initDateRead('Try again. ', carData)
+    InitDateRead('Try again. ', carData)
     return
   }
 
   carData.dateValue = myDate
-  initTimeRead('', carData)
+  InitTimeRead('', carData)
 }
 
-const initTimeRead = (actualMessage, carData) => {
-  rl.question((actualMessage || '') + 'Insert the time in the format HH:MM >', (answer) => { readTime(answer, carData) })
+const InitTimeRead = (actualMessage, carData) => {
+  rl.question((actualMessage || '') + 'Insert the time in the format HH:MM >', (answer) => { ReadTime(answer, carData) })
 }
 
-const readTime = (timeValue, carData) => {
+const ReadTime = (timeValue, carData) => {
   const oldDate = carData.dateValue.format('YYYY/MM/DD')
   const myDate = moment(`${oldDate} ${timeValue}`, 'YYYY/MM/DD HH:mm', true)
 
   if (!myDate.isValid()) {
-    initTimeRead('Try again. ', carData)
+    InitTimeRead('Try again. ', carData)
     return
   }
 
   carData.dateValue = myDate
-  console.log('>>>>>>>>>>> ' + (HasProhibition(carData.plateText, carData.dateValue) ?
-    'Cannot be on road.' : 'Can be on road.'))
   rl.close()
+  console.log('>>>>>>>>>>> ' + (HasProhibition(carData.plateText, carData.dateValue)
+    ? 'Cannot be on road.' : 'Can be on road.'))
 }
 
-initReadPlate('')
+module.exports = {
+  HasProhibition,
+  InitReadPlate,
+  IsValidPlate
+}
