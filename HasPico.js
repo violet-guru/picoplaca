@@ -2,7 +2,7 @@
 
 const readline = require('readline')
 const moment = require('moment')
-let rl
+const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
 
 /**
  * Checks if a car can be on the road
@@ -47,7 +47,6 @@ const HasProhibition = (plateText, dateValue) => {
  * @param actualMessage string
  */
 const InitReadPlate = (actualMessage) => {
-  rl = readline.createInterface({ input: process.stdin, output: process.stdout })
   rl.question((actualMessage || '') + 'Insert the plate number in the format AAA-9999 or AAA-999 >', readPlate)
 }
 
