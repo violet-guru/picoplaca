@@ -1,3 +1,5 @@
+// Victor Hugo Lafuente Cevallos
+
 const readline = require('readline')
 const moment = require('moment')
 let rl
