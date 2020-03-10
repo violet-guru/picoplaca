@@ -1,7 +1,13 @@
 const readline = require('readline')
 const moment = require('moment')
-const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
+let rl
 
+/**
+ * Checks if a car can be on the road
+ * @param plateText string
+ * @param dateValue moment
+ * @returns {boolean}
+ */
 const HasProhibition = (plateText, dateValue) => {
   const lastCharacter = parseInt(plateText.slice(-1))
   const dayIndex = dateValue.day()
@@ -34,14 +40,28 @@ const HasProhibition = (plateText, dateValue) => {
   }
 }
 
+/**
+ * Starting point to retrieve data from user
+ * @param actualMessage string
+ */
 const InitReadPlate = (actualMessage) => {
+  rl = readline.createInterface({ input: process.stdin, output: process.stdout })
   rl.question((actualMessage || '') + 'Insert the plate number in the format AAA-9999 or AAA-999 >', readPlate)
 }
 
+/**
+ * Validation to know if a text is a car plate
+ * @param plateValue string
+ * @returns {boolean}
+ */
 const IsValidPlate = (plateValue) => {
   return /^[A-Za-z]{3}[-][0-9]{3,4}$/.test(plateValue)
 }
 
+/**
+ * Checks car plate value and continue to next question for the user
+ * @param plateValue string
+ */
 const readPlate = (plateValue) => {
   if (!IsValidPlate(plateValue)) {
     InitReadPlate('Try again. ')
@@ -56,9 +76,13 @@ const InitDateRead = (actualMessage, carData) => {
   rl.question((actualMessage || '') + 'Insert the date in the slash format YYYY/MM/DD >', (answer) => { ReadDate(answer, carData) })
 }
 
+/**
+ * Checks date and continue to next question for the user
+ * @param dateValue string
+ * @param carData
+ */
 const ReadDate = (dateValue, carData) => {
   const myDate = moment(dateValue, 'YYYY/MM/DD', true)
-
   if (!myDate.isValid()) {
     InitDateRead('Try again. ', carData)
     return
@@ -72,10 +96,14 @@ const InitTimeRead = (actualMessage, carData) => {
   rl.question((actualMessage || '') + 'Insert the time in the format HH:MM >', (answer) => { ReadTime(answer, carData) })
 }
 
+/**
+ * Checks time and continue to review car availability
+ * @param timeValue string
+ * @param carData
+ */
 const ReadTime = (timeValue, carData) => {
   const oldDate = carData.dateValue.format('YYYY/MM/DD')
   const myDate = moment(`${oldDate} ${timeValue}`, 'YYYY/MM/DD HH:mm', true)
-
   if (!myDate.isValid()) {
     InitTimeRead('Try again. ', carData)
     return
